@@ -1,6 +1,5 @@
-package InstagramCloneServer.models.Subscription;
+package InstagramCloneServer.models.subscription;
 
-import InstagramCloneServer.models.Subscription.Subscription;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

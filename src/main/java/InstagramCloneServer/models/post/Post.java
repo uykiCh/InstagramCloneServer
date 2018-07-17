@@ -1,4 +1,4 @@
-package InstagramCloneServer.models.Post;
+package InstagramCloneServer.models.post;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

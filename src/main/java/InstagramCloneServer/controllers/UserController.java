@@ -1,8 +1,8 @@
 package InstagramCloneServer.controllers;
 
-import InstagramCloneServer.models.Subscription.SubscriptionDao;
-import InstagramCloneServer.models.User.User;
-import InstagramCloneServer.models.User.UserDao;
+import InstagramCloneServer.models.subscription.SubscriptionDao;
+import InstagramCloneServer.models.user.User;
+import InstagramCloneServer.models.user.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -34,10 +34,12 @@ public class UserController {
     @RequestMapping(path = "/user/{id}/settings")
     @ResponseBody
     void setSettings(@PathVariable("id") long id,
-                     @RequestParam(value = "fullname") String fullname, @RequestParam(value = "about") String about,
+                     @RequestParam(value = "first_name") String first_name,
+                     @RequestParam(value = "last_name") String last_name,
+                     @RequestParam(value = "about") String about,
                      @RequestParam(value = "image") String image) throws Exception {
 
-        userDao.updateSettings(id, fullname, about, image);
+        userDao.updateSettings(id, first_name,last_name , about, image);
 
     }
 
@@ -70,6 +72,6 @@ public class UserController {
         }catch (Exception e){
             return Optional.empty();
         }
-        }
+    }
 
 }

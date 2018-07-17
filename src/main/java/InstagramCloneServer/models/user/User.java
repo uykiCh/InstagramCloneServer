@@ -1,4 +1,4 @@
-package InstagramCloneServer.models.User;
+package InstagramCloneServer.models.user;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -19,8 +19,11 @@ public class User {
     @Column(name = "about")
     private String about;
 
-    @Column(name = "fullname")
-    private String fullname;
+    @Column(name = "first_name")
+    private String first_name;
+
+    @Column(name = "last_name")
+    private String last_name;
 
     @Column(name = "image")
     private String image;
@@ -36,11 +39,13 @@ public class User {
         this.login = login;
     }
 
-    public User(long id, @NotNull String login, String about, String fullname) {
+    public User(long id, @NotNull String login, String about, String first_name, String last_name, String image) {
         this.id = id;
         this.login = login;
         this.about = about;
-        this.fullname = fullname;
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.image = image;
     }
 
     public User(long id, @NotNull String login, String image) {
@@ -73,12 +78,20 @@ public class User {
         this.about = about;
     }
 
-    public String getFullname() {
-        return fullname;
+    public String getFirst_name() {
+        return first_name;
     }
 
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
+    }
+
+    public String getLast_name() {
+        return last_name;
+    }
+
+    public void setLast_name(String last_name) {
+        this.last_name = last_name;
     }
 
     public String getImage() {
@@ -89,8 +102,4 @@ public class User {
         this.image = image;
     }
 
-    @Override
-    public String toString() {
-        return "ID: " + getId() + "\nLogin: " + getLogin() + "\nFullname: " + getFullname() + "\nAbout: " + getAbout();
-    }
 }

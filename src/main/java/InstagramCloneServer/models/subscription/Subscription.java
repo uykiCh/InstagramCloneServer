@@ -1,9 +1,6 @@
-package InstagramCloneServer.models.Subscription;
-
-import org.springframework.lang.NonNull;
+package InstagramCloneServer.models.subscription;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "subscriptions", schema = "instagramclone")

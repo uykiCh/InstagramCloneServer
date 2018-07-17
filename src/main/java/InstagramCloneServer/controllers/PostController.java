@@ -1,7 +1,7 @@
 package InstagramCloneServer.controllers;
 
-import InstagramCloneServer.models.Post.Post;
-import InstagramCloneServer.models.Post.PostDao;
+import InstagramCloneServer.models.post.Post;
+import InstagramCloneServer.models.post.PostDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
