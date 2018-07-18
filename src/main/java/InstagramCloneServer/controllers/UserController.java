@@ -85,7 +85,7 @@ public class UserController {
             return true;
 
         } else /*if (paramInteraction.equals("getUser"))*/{
-            
+
             try {
 
                 return userDao.findById(user_id);
