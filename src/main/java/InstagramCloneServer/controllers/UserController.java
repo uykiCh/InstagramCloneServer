@@ -1,6 +1,7 @@
 package InstagramCloneServer.controllers;
 
-import InstagramCloneServer.models.subscription.SubscriptionDao;
+import InstagramCloneServer.models.following.Following;
+import InstagramCloneServer.models.following.FollowingDao;
 import InstagramCloneServer.models.user.User;
 import InstagramCloneServer.models.user.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +18,7 @@ public class UserController {
     private UserDao userDao;
 
     @Autowired
-    private SubscriptionDao subscriptionDao;
-
-    @RequestMapping("/user/{id}/subscriptions")
-    @ResponseBody
-    long getSubscriptionCount(@RequestParam(value = "id") long id) throws Exception {
-        return subscriptionDao.countById(id);
-    }
-
-    @RequestMapping("/user/{id}/subscribers")
-    @ResponseBody
-    long getSubscribersCount(@RequestParam(value = "id") long id) throws Exception {
-        return subscriptionDao.countByIdsub(id);
-    }
+    FollowingDao followingDao;
 
     @RequestMapping(path = "/user/{id}/settings")
     @ResponseBody
@@ -39,39 +28,83 @@ public class UserController {
                      @RequestParam(value = "about") String about,
                      @RequestParam(value = "image") String image) throws Exception {
 
-        userDao.updateSettings(id, first_name,last_name , about, image);
-
-    }
-
-    @RequestMapping(path = "/user/create", method = RequestMethod.POST)
-    @ResponseBody
-    void create(@RequestParam(value = "login") String login) throws Exception {
-
-        User user = new User(login);
-        userDao.save(user);
+        userDao.updateSettings(id, first_name, last_name, about, image);
 
     }
 
 
-    @RequestMapping(path = "/user/{id}/find", method = RequestMethod.GET)
+    @RequestMapping(path = "/user/find", method = RequestMethod.GET)
     @ResponseBody
-    List<User> findByLogin(@PathVariable("id") long id,
-                                  @RequestParam(value = "login") String[] login) throws Exception{
+    List<User> findByLogin(@RequestParam(value = "login") String[] login) throws Exception {
 
         return userDao.usersList(login);
 
     }
 
-    @RequestMapping(path = "user/{id}", method = RequestMethod.GET)
+    @RequestMapping(path = "/user/{user_id}")
     @ResponseBody
-    Optional<User> getUser(@PathVariable("id") long id){
-        try {
+    Object interactions(@PathVariable(value = "user_id") long user_id,
+                        @RequestParam(value = "interaction") String paramInteraction,
+                        @RequestParam(value = "follower_id", required = false) Long follower_id) throws Exception {
 
-            return userDao.findById(id);
+        if (paramInteraction.equals("getFollowersCount")) {
 
-        }catch (Exception e){
-            return Optional.empty();
+            return followingDao.countByFollowerId(user_id);
+
+        } else if (paramInteraction.equals("getFollowingCount")) {
+
+            return followingDao.countByUserId(user_id);
+
+        } else if (paramInteraction.equals("addSubscription")){
+
+            try {
+
+                followingDao.save(new Following(user_id, follower_id));
+
+            } catch (Exception e) {
+
+                return false;
+
+            }
+
+
+            return true;
+
+        } else if (paramInteraction.equals("deleteSubscription")){
+
+            try {
+
+                followingDao.delete(user_id, follower_id);
+
+            } catch (Exception e) {
+
+                return false;
+
+            }
+
+            return true;
+
+        } else /*if (paramInteraction.equals("getUser"))*/{
+            
+            try {
+
+                return userDao.findById(user_id);
+
+            } catch (Exception e) {
+
+                return null;
+
+            }
         }
+
+    }
+
+    @RequestMapping(path = "/user/create", method = RequestMethod.POST)
+    @ResponseBody
+    void createUser(@RequestParam(value = "login") String login) throws Exception {
+
+        userDao.save(new User(login));
+
     }
 
 }

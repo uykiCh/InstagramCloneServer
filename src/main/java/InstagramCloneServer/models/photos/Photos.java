@@ -1,7 +1,5 @@
 package InstagramCloneServer.models.photos;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import javax.persistence.*;
 import java.sql.Date;
 
