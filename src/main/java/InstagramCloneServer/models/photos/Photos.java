@@ -12,7 +12,7 @@ public class Photos {
     long photoId;
 
     @Column(name = "user_id")
-    long user_id;
+    long userId;
 
     @Column(name = "caption")
     String caption;
@@ -35,8 +35,8 @@ public class Photos {
     public Photos() {
     }
 
-    public Photos(long user_id, String caption, float latitude, float longitude, String image_path, Date date_created, Date date_updated) {
-        this.user_id = user_id;
+    public Photos(long userId, String caption, float latitude, float longitude, String image_path, Date date_created, Date date_updated) {
+        this.userId = userId;
         this.caption = caption;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -53,12 +53,12 @@ public class Photos {
         this.photoId = photoId;
     }
 
-    public long getUser_id() {
-        return user_id;
+    public long getUserId() {
+        return userId;
     }
 
-    public void setUser_id(long user_id) {
-        this.user_id = user_id;
+    public void setUserId(long user_id) {
+        this.userId = user_id;
     }
 
     public String getCaption() {

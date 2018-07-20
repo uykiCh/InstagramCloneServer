@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.util.List;
 
 public interface PhotosDao extends CrudRepository<Photos, Long> {
 
@@ -19,6 +20,8 @@ public interface PhotosDao extends CrudRepository<Photos, Long> {
     void updateData(@Param("photo_id") long photo_id,
                            @Param("caption") String caption,
                            @Param("date_updated") Date date_updated);
+
+    List<Photos> queryFirst10ByUserId(List<Long> subscriptions);
 
 
 

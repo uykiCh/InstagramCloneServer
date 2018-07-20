@@ -2,6 +2,8 @@ package InstagramCloneServer.controllers;
 
 import InstagramCloneServer.models.comment.Comment;
 import InstagramCloneServer.models.comment.CommentDao;
+import InstagramCloneServer.models.likes.Likes;
+import InstagramCloneServer.models.likes.LikesDao;
 import InstagramCloneServer.models.photo_comments.PhotoComment;
 import InstagramCloneServer.models.photos.Photos;
 import InstagramCloneServer.models.photos.PhotosDao;
@@ -24,6 +26,9 @@ public class PhotoController {
 
     @Autowired
     CommentDao commentsDao;
+
+    @Autowired
+    LikesDao likesDao;
 
     @RequestMapping(path = "/photos/add")
     @ResponseBody
@@ -53,21 +58,10 @@ public class PhotoController {
     Object interaction(@PathVariable(value = "id") Long photoId,
                        @PathVariable(value = "interaction") String interaction,
                        @RequestParam(value = "text", required = false) String text,
-                       @RequestParam(value = "comment_id", required = false) Long commentId) throws Exception {
+                       @RequestParam(value = "comment_id", required = false) Long commentId,
+                       @RequestParam(value = "user_id", required = false) Long userId) throws Exception {
 
-        if (interaction.equals("getPost")) {
-
-            try {
-
-                return photosDao.findByPhotoId(photoId);
-
-            } catch (Exception e) {
-
-                return false;
-
-            }
-
-        } else if (interaction.equals("update")) {
+        if (interaction.equals("update")) {
 
             try {
 
@@ -96,7 +90,7 @@ public class PhotoController {
 
             return true;
 
-        } else if (interaction.equals("getComments")){
+        } else if (interaction.equals("getComments")) {
 
             try {
 
@@ -126,7 +120,7 @@ public class PhotoController {
 
             }
 
-        } else /*if (interaction.equals("deleteComment"))*/{
+        } else if (interaction.equals("deleteComment")) {
 
             try {
 
@@ -141,6 +135,34 @@ public class PhotoController {
                 return e.getMessage();
 
             }
+
+        } else if (interaction.equals("addLike")) {
+
+            try {
+
+                likesDao.save(new Likes(photoId, userId));
+
+            } catch (Exception e) {
+
+                return false;
+
+            }
+
+            return true;
+
+        } else /*if (interaction.equals("deleteLike")) */{
+
+            try {
+
+                likesDao.deleteByPhotoIdAndUserId(photoId, userId);
+
+            } catch (Exception e) {
+
+                return false;
+
+            }
+
+            return true;
 
         }
 

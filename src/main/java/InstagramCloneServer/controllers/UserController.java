@@ -2,12 +2,15 @@ package InstagramCloneServer.controllers;
 
 import InstagramCloneServer.models.following.Following;
 import InstagramCloneServer.models.following.FollowingDao;
+import InstagramCloneServer.models.likes.LikesDao;
+import InstagramCloneServer.models.photos.PhotosDao;
 import InstagramCloneServer.models.user.User;
 import InstagramCloneServer.models.user.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -18,6 +21,9 @@ public class UserController {
 
     @Autowired
     FollowingDao followingDao;
+
+    @Autowired
+    PhotosDao photosDao;
 
     @RequestMapping(path = "/user/{id}/settings")
     @ResponseBody
@@ -57,30 +63,29 @@ public class UserController {
 
     @RequestMapping(path = "/user/{user_id}/{interaction}")
     @ResponseBody
-    Object interactions(@PathVariable(value = "user_id") Long user_id,
+    Object interactions(@PathVariable(value = "user_id") Long userId,
                         @PathVariable(value = "interaction") String paramInteraction,
-                        @RequestParam(value = "follower_id", required = false) Long follower_id) throws Exception {
+                        @RequestParam(value = "follower_id", required = false) Long followerId) throws Exception {
 
         if (paramInteraction.equals("getFollowersCount")) {
 
-            return followingDao.countByFollowerId(user_id);
+            return followingDao.countByFollowerId(userId);
 
         } else if (paramInteraction.equals("getFollowingCount")) {
 
-            return followingDao.countByUserId(user_id);
+            return followingDao.countByUserId(userId);
 
         } else if (paramInteraction.equals("addSubscription")) {
 
             try {
 
-                followingDao.save(new Following(user_id, follower_id));
+                followingDao.save(new Following(followerId, userId));
 
             } catch (Exception e) {
 
                 return false;
 
             }
-
 
             return true;
 
@@ -88,7 +93,7 @@ public class UserController {
 
             try {
 
-                followingDao.delete(user_id, follower_id);
+                followingDao.delete(followerId, userId);
 
             } catch (Exception e) {
 
@@ -98,17 +103,36 @@ public class UserController {
 
             return true;
 
-        } else /*if (paramInteraction.equals("getUser"))*/ {
+        } else if (paramInteraction.equals("getUser")) {
 
             try {
 
-                return userDao.findById(user_id);
+                return userDao.findById(userId);
 
             } catch (Exception e) {
 
                 return null;
 
             }
+        } else /*if (paramInteraction.equals("getPhotosBySubscription"))*/ {
+
+            try {
+
+                List<Following> subscriptionsFullList = followingDao.findByFollowerId(userId);
+                List<Long> subscriptionsList = new ArrayList<>();
+                subscriptionsFullList.forEach(v -> subscriptionsList.add(v.getUserId()));
+
+                System.out.println("List is ");
+                subscriptionsList.forEach(System.out::println);
+
+                return photosDao.queryFirst10ByUserId(subscriptionsList);
+
+            } catch (Exception e) {
+
+                return e.getMessage();
+
+            }
+
         }
 
     }

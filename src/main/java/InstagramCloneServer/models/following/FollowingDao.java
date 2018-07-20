@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface FollowingDao extends CrudRepository<Following, Long> {
 
     long countByFollowerId(long followerId);
@@ -16,5 +18,7 @@ public interface FollowingDao extends CrudRepository<Following, Long> {
     @Query(value = "DELETE FROM Following WHERE user_id = ?1 AND follower_id = ?2",
             nativeQuery = true)
     int delete(long user_id, long follower_id);
+
+    List<Following> findByFollowerId(Long user_id);
 
 }

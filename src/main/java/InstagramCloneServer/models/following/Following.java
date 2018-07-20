@@ -6,11 +6,11 @@ import javax.persistence.*;
 @Table(name = "following", schema = "instagramclone")
 public class Following {
 
-    @Id
     @Column(name = "user_id")
-
     long userId;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "follower_id")
     long followerId;
 
