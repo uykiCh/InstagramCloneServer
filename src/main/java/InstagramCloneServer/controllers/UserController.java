@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class UserController {
@@ -22,29 +21,44 @@ public class UserController {
 
     @RequestMapping(path = "/user/{id}/settings")
     @ResponseBody
-    void setSettings(@PathVariable("id") long id,
-                     @RequestParam(value = "first_name") String first_name,
-                     @RequestParam(value = "last_name") String last_name,
-                     @RequestParam(value = "about") String about,
-                     @RequestParam(value = "image") String image) throws Exception {
+    boolean setSettings(@PathVariable("id") Long id,
+                        @RequestParam(value = "first_name", required = false) String first_name,
+                        @RequestParam(value = "last_name", required = false) String last_name,
+                        @RequestParam(value = "about", required = false) String about,
+                        @RequestParam(value = "image", required = false) String image) throws Exception {
 
-        userDao.updateSettings(id, first_name, last_name, about, image);
+        try {
+
+            User user = userDao.findByUserId(id);
+
+            if (first_name != null) {
+                user.setFirst_name(first_name);
+            }
+            if (last_name != null) {
+                user.setLast_name(last_name);
+            }
+            if (about != null) {
+                user.setAbout(about);
+            }
+            if (image != null) {
+                user.setImage(image);
+            }
+            userDao.save(user);
+
+        } catch (Exception e) {
+
+            return false;
+
+        }
+
+        return true;
 
     }
 
-
-    @RequestMapping(path = "/user/find", method = RequestMethod.GET)
+    @RequestMapping(path = "/user/{user_id}/{interaction}")
     @ResponseBody
-    List<User> findByLogin(@RequestParam(value = "login") String[] login) throws Exception {
-
-        return userDao.usersList(login);
-
-    }
-
-    @RequestMapping(path = "/user/{user_id}")
-    @ResponseBody
-    Object interactions(@PathVariable(value = "user_id") long user_id,
-                        @RequestParam(value = "interaction") String paramInteraction,
+    Object interactions(@PathVariable(value = "user_id") Long user_id,
+                        @PathVariable(value = "interaction") String paramInteraction,
                         @RequestParam(value = "follower_id", required = false) Long follower_id) throws Exception {
 
         if (paramInteraction.equals("getFollowersCount")) {
@@ -55,7 +69,7 @@ public class UserController {
 
             return followingDao.countByUserId(user_id);
 
-        } else if (paramInteraction.equals("addSubscription")){
+        } else if (paramInteraction.equals("addSubscription")) {
 
             try {
 
@@ -70,7 +84,7 @@ public class UserController {
 
             return true;
 
-        } else if (paramInteraction.equals("deleteSubscription")){
+        } else if (paramInteraction.equals("deleteSubscription")) {
 
             try {
 
@@ -84,7 +98,7 @@ public class UserController {
 
             return true;
 
-        } else /*if (paramInteraction.equals("getUser"))*/{
+        } else /*if (paramInteraction.equals("getUser"))*/ {
 
             try {
 
@@ -99,11 +113,29 @@ public class UserController {
 
     }
 
-    @RequestMapping(path = "/user/create", method = RequestMethod.POST)
+    @RequestMapping(path = "/user/create")
     @ResponseBody
-    void createUser(@RequestParam(value = "login") String login) throws Exception {
+    boolean createUser(@RequestParam(value = "login") String login) throws Exception {
 
-        userDao.save(new User(login));
+        try {
+
+            userDao.save(new User(login));
+
+        } catch (Exception e) {
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
+    @RequestMapping(path = "/user/find", method = RequestMethod.GET)
+    @ResponseBody
+    List<User> findByLogin(@RequestParam(value = "login") String[] login) throws Exception {
+
+        return userDao.usersList(login);
 
     }
 

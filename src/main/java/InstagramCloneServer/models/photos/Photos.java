@@ -8,7 +8,6 @@ import java.sql.Date;
 public class Photos {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "photo_id", nullable = false)
     long photoId;
 

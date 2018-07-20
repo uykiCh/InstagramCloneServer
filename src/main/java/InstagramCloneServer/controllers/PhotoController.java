@@ -1,12 +1,17 @@
 package InstagramCloneServer.controllers;
 
+import InstagramCloneServer.models.comment.Comment;
+import InstagramCloneServer.models.comment.CommentDao;
+import InstagramCloneServer.models.photo_comments.PhotoComment;
 import InstagramCloneServer.models.photos.Photos;
 import InstagramCloneServer.models.photos.PhotosDao;
+import InstagramCloneServer.models.photo_comments.PhotoCommentDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
 import java.sql.Date;
-import java.util.Optional;
+import java.util.List;
 
 @Controller
 public class PhotoController {
@@ -14,12 +19,18 @@ public class PhotoController {
     @Autowired
     PhotosDao photosDao;
 
+    @Autowired
+    PhotoCommentDao photoCommentsDao;
+
+    @Autowired
+    CommentDao commentsDao;
+
     @RequestMapping(path = "/photos/add")
     @ResponseBody
-    boolean addPost(@RequestParam(value = "user_id") long user_id,
-                    @RequestParam(value = "caption") String caption,
-                    @RequestParam(value = "latitude") float latitude,
-                    @RequestParam(value = "longitude") float longitude,
+    boolean addPost(@RequestParam(value = "user_id") Long user_id,
+                    @RequestParam(value = "caption", required = false) String caption,
+                    @RequestParam(value = "latitude", required = false) Float latitude,
+                    @RequestParam(value = "longitude", required = false) Float longitude,
                     @RequestParam(value = "image_path") String image_path,
                     @RequestParam(value = "date_created") Date date_created,
                     @RequestParam(value = "date_updated") Date date_updated) {
@@ -37,57 +48,101 @@ public class PhotoController {
         return true;
     }
 
-    @RequestMapping(path = "/photos/{id}")
+    @RequestMapping(path = "/photos/{id}/{interaction}")
     @ResponseBody
-    Optional<Object> getPost(@PathVariable(value = "id") long photo_id) throws Exception {
+    Object interaction(@PathVariable(value = "id") Long photoId,
+                       @PathVariable(value = "interaction") String interaction,
+                       @RequestParam(value = "text", required = false) String text,
+                       @RequestParam(value = "comment_id", required = false) Long commentId) throws Exception {
 
-        try {
+        if (interaction.equals("getPost")) {
 
-            return Optional.ofNullable(photosDao.findByPhotoId(photo_id));
+            try {
 
-        } catch (Exception e) {
+                return photosDao.findByPhotoId(photoId);
 
-            return Optional.empty();
+            } catch (Exception e) {
+
+                return false;
+
+            }
+
+        } else if (interaction.equals("update")) {
+
+            try {
+
+                photosDao.updateData(photoId, text, (new Date((new java.util.Date()).getTime())));
+
+
+            } catch (Exception e) {
+
+                return false;
+
+            }
+
+            return true;
+
+        } else if (interaction.equals("delete")) {
+
+            try {
+
+                photosDao.deleteById(photoId);
+
+            } catch (Exception e) {
+
+                return false;
+
+            }
+
+            return true;
+
+        } else if (interaction.equals("getComments")){
+
+            try {
+
+                return photoCommentsDao.queryFirst10ByPhotoIdOrderByCommentIdDesc(photoId);
+
+            } catch (Exception e) {
+
+                return e.getMessage();
+
+            }
+
+        } else if (interaction.equals("addComment")) {
+
+            try {
+
+                PhotoComment photoComment = new PhotoComment(photoId);
+
+                photoCommentsDao.save(photoComment);
+
+                commentsDao.save(new Comment(photoComment.getCommentId(), text));
+
+                return true;
+
+            } catch (Exception e) {
+
+                return false;
+
+            }
+
+        } else /*if (interaction.equals("deleteComment"))*/{
+
+            try {
+
+                photoCommentsDao.deleteById(commentId);
+
+                commentsDao.deleteById(commentId);
+
+                return true;
+
+            } catch (Exception e) {
+
+                return e.getMessage();
+
+            }
 
         }
-
-    }
-
-    @RequestMapping(path = "/photos/delete/{id}")
-    @ResponseBody
-    boolean deletePhotos(@PathVariable(value = "id") long photo_id) throws Exception {
-
-        try {
-
-            photosDao.deleteById(photo_id);
-
-        } catch (Exception e) {
-
-            return false;
-
-        }
-
-        return true;
-
-    }
-
-    @RequestMapping(path = "/photos/update/{id}")
-    @ResponseBody
-    boolean updatePhotos(@PathVariable(value = "id") long photo_id,
-                       @RequestParam(value = "caption") String caption,
-                       @RequestParam(value = "date_updated") Date date_updated) throws Exception {
-
-        try {
-
-            photosDao.updateData(photo_id, caption, date_updated);
-
-        } catch (Exception e) {
-
-            return false;
-
-        }
-
-        return true;
 
     }
 

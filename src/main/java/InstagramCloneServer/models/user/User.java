@@ -8,9 +8,8 @@ import javax.validation.constraints.NotNull;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    private long id;
+    private long userId;
 
     @NotNull
     @Column(name = "login", nullable = false, length = 20)
@@ -31,16 +30,12 @@ public class User {
     public User() {
     }
 
-    public User(long id) {
-        this.id = id;
-    }
-
     public User(@NotNull String login) {
         this.login = login;
     }
 
     public User(long id, @NotNull String login, String about, String first_name, String last_name, String image) {
-        this.id = id;
+        this.userId = id;
         this.login = login;
         this.about = about;
         this.first_name = first_name;
@@ -49,17 +44,17 @@ public class User {
     }
 
     public User(long id, @NotNull String login, String image) {
-        this.id = id;
+        this.userId = id;
         this.login = login;
         this.image = image;
     }
 
     public long getId() {
-        return id;
+        return userId;
     }
 
     public void setId(long id) {
-        this.id = id;
+        this.userId = id;
     }
 
     public String getLogin() {
